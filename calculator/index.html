@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Calculator</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(90deg, #00a6fb, #00ffbf);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+    .calculator {
+      width: 240px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      background-color: #e6ffff;
+    }
+    .display {
+      background: #004d4d;
+      color: #fff;
+      height: 60px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 60px;
+      gap: 1px;
+    }
+    button {
+      font-size: 18px;
+      border: none;
+      background-color: #ccffff;
+      cursor: pointer;
+    }
+    button:active {
+      background-color: #b3ebeb;
+    }
+    .operator {
+      background-color: #ffcc66;
+    }
+    .operator:active {
+      background-color: #f5b84a;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button data-operator="clear">AC</button>
+      <button data-operator="backspace">DEL</button>
+      <button class="operator" data-operator="/">/</button>
+      <button class="operator" data-operator="*">*</button>
+
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="operator" data-operator="-">-</button>
+
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="operator" data-operator="+">+</button>
+
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="operator" data-operator="=">=</button>
+
+      <button data-value=".">.</button>
+      <button data-value="0">0</button>
+      <button></button>
+      <button></button>
+    </div>
+  </div>
+
+  <script>
+    let firstOperand = null
+    let secondOperand = null
+    let currentOperator = null
+    let shouldReset = false
+    const display = document.getElementById("display")
+    const buttons = document.querySelectorAll("button")
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const value = btn.getAttribute("data-value")
+        const operator = btn.getAttribute("data-operator")
+        if (value) handleNumber(value)
+        if (operator) handleOperator(operator)
+      })
+    })
+
+    function handleNumber(num) {
+      if (display.textContent === "0" && num !== ".") {
+        display.textContent = num
+        return
+      }
+      if (shouldReset) {
+        display.textContent = (num === ".") ? "0." : num
+        shouldReset = false
+        return
+      }
+      if (num === "." && display.textContent.includes(".")) return
+      display.textContent += num
+    }
+
+    function handleOperator(op) {
+      if (op === "clear") {
+        clearAll()
+        return
+      }
+      if (op === "backspace") {
+        backspace()
+        return
+      }
+      if (op === "=") {
+        if (currentOperator === null) return
+        calculate()
+        currentOperator = null
+        return
+      }
+      if (currentOperator && !shouldReset) calculate()
+      firstOperand = parseFloat(display.textContent)
+      currentOperator = op
+      shouldReset = true
+    }
+
+    function calculate() {
+      if (firstOperand === null || currentOperator === null) return
+      secondOperand = parseFloat(display.textContent)
+      let result = 0
+      if (currentOperator === "+") result = firstOperand + secondOperand
+      else if (currentOperator === "-") result = firstOperand - secondOperand
+      else if (currentOperator === "*") result = firstOperand * secondOperand
+      else if (currentOperator === "/") {
+        if (secondOperand === 0) {
+          display.textContent = "Error"
+          return
+        }
+        result = firstOperand / secondOperand
+      }
+      display.textContent = result
+      firstOperand = result
+      shouldReset = true
+    }
+
+    function clearAll() {
+      firstOperand = null
+      secondOperand = null
+      currentOperator = null
+      shouldReset = false
+      display.textContent = "0"
+    }
+
+    function backspace() {
+      if (display.textContent === "0" || display.textContent === "Error") return
+      display.textContent = display.textContent.slice(0, -1)
+      if (display.textContent === "") display.textContent = "0"
+    }
+  </script>
+</body>
+</html>

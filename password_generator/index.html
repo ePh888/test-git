@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Password Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 350px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: inline-block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    #length {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-container {
+      margin-bottom: 10px;
+    }
+
+    .checkbox-container input {
+      margin-right: 5px;
+    }
+
+    #generateBtn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      background-color: #3f51b5;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+
+    #generateBtn:hover {
+      background-color: #303f9f;
+    }
+
+    .output {
+      display: flex;
+      gap: 5px;
+    }
+
+    #passwordOutput {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    #copyBtn {
+      padding: 8px 15px;
+      background-color: #4caf50;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    #copyBtn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Password Generator</h1>
+
+    <label for="length">Password length:</label>
+    <input type="number" id="length" value="12" min="4" max="128" />
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="uppercase" checked />
+      <label for="uppercase">Use uppercase letters (A-Z)</label>
+    </div>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="numbers" checked />
+      <label for="numbers">Use numbers (0-9)</label>
+    </div>
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="symbols" />
+      <label for="symbols">Use symbols (!@#$%...)</label>
+    </div>
+
+    <button id="generateBtn">Generate Password</button>
+
+    <div class="output">
+      <input type="text" id="passwordOutput" readonly />
+      <button id="copyBtn">Copy</button>
+    </div>
+  </div>
+
+  <script>
+    const lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    const uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*()-_=+[]{};:,.<>/?\\|~`";
+
+    function generatePassword(length, useUppercase, useNumbers, useSymbols) {
+      let availableChars = lowercaseLetters;
+
+      if (useUppercase) {
+        availableChars += uppercaseLetters;
+      }
+      if (useNumbers) {
+        availableChars += numbers;
+      }
+      if (useSymbols) {
+        availableChars += symbols;
+      }
+
+      let generatedPassword = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * availableChars.length);
+        generatedPassword += availableChars.charAt(randomIndex);
+      }
+      return generatedPassword;
+    }
+
+    const lengthInput = document.getElementById("length");
+    const uppercaseCheckbox = document.getElementById("uppercase");
+    const numbersCheckbox = document.getElementById("numbers");
+    const symbolsCheckbox = document.getElementById("symbols");
+    const generateBtn = document.getElementById("generateBtn");
+    const passwordOutput = document.getElementById("passwordOutput");
+    const copyBtn = document.getElementById("copyBtn");
+
+    generateBtn.addEventListener("click", () => {
+      const length = parseInt(lengthInput.value);
+      const useUppercase = uppercaseCheckbox.checked;
+      const useNumbers = numbersCheckbox.checked;
+      const useSymbols = symbolsCheckbox.checked;
+
+      const password = generatePassword(length, useUppercase, useNumbers, useSymbols);
+      passwordOutput.value = password;
+    });
+
+    copyBtn.addEventListener("click", () => {
+      if (passwordOutput.value) {
+        passwordOutput.select();
+        passwordOutput.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Password copied!");
+      }
+    });
+  </script>
+</body>
+</html>
